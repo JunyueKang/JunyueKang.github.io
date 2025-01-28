@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Live2D Demo</title>
+    <style>
+        #live2d-widget {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            height: 500px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="live2d-widget"></div>
+
+    <!-- 添加核心依赖 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/live2d-widget@3.1.4/lib/L2Dwidget.min.js"></script> -->
+    <script src="L2Dwidget.min.js"></script>
+    <script src="L2Dwidget.0.min.js"></script>
+    
+    <script>
+        const config = {
+            "model": {
+                //"jsonPath": "https://cdn.jsdelivr.net/npm/live2d-widget-model-hijiki@1.0.5/assets/hijiki.model.json",
+                // 如果使用本地模型，改用下面的配置
+                "jsonPath": "./model.json" 
+                
+            },
+            "display": {
+                "position": "right",
+                "width": 300,
+                "height": 500
+            },
+            "mobile": {
+                "show": true,
+                "scale": 0.5
+            },
+            "react": {
+                "opacity": 1.0
+            }
+        };
+
+        window.onload = () => {
+            L2Dwidget.init(config);
+        };
+    </script>
+</body>
+</html>
