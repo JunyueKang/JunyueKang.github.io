@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown、数学公式和代码块卡片</title>
+     <!--立即应用主题，防止闪烁 -->
+    <script src="themes.js"></script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.classList.toggle('dark-theme', savedTheme === 'dark');
+        if (typeof applyThemeColors === 'function') {
+            applyThemeColors(savedTheme === 'dark');
+        }
+    </script>
+    <!-- CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/stackoverflow-dark.css" id="code-theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    <!-- 动态加载对应的 Markdown 内容文件 -->
+    <script>
+        // 获取URL参数中的文件路径
+        const urlParams = new URLSearchParams(window.location.search);
+        const mdFile = urlParams.get('file');
+        
+        if (mdFile) {
+            // 根据 md 文件名动态加载对应的 js 文件
+            const scriptElement = document.createElement('script');
+            scriptElement.src = `md-contents/${mdFile.replace('.md', '-content.js')}`;
+            //console.log(scriptElement.src)
+           
+            document.head.appendChild(scriptElement);
+        }
+    </script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: var(--background);
+            font-family: Arial, sans-serif;
+            font-size: 15px; 
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: var(--cardBackground);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px var(--shadowColor);
+            padding: 20px;
+            width: 52vw;
+            min-width: 300px;
+            height: 90vh;
+            overflow: auto;
+            transition: background-color 0.3s, color 0.3s;
+            color: var(--textColor);
+        }
+
+        
+
+        /* 滚动条 */
+        .card::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbarThumb);
+        }
+        
+        .card::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbarThumbHover);
+        }
+
+        /* 代码块滚动条 */
+        .code-block-wrapper code::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbarCodeThumb);
+        }
+        
+        
+
+        /* 表格 */
+        .card table {
+            background-color: var(--tableBg);
+        }
+        .card td {
+            border: 1px solid var(--borderColor);
+        }
+
+        .card th {
+            background-color: var(--tableHeaderBg);
+        }
+
+        .card tr:nth-child(even) {
+            background-color: var(--tableStripedBg);
+        }
+
+        .card tr:hover {
+            background-color: var(--tableHoverBg);
+        }
+
+
+        .card-container {
+            position: relative;
+        }
+
+        /* 段落行距 */
+        .card p {
+            line-height: 1.6; 
+            margin: 1.0em 0;  
+        }
+        /* 滚动条样式 */
+        .card::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .card::-webkit-scrollbar-thumb {
+            background-color: ---var(--scrollbarThumb);
+            border-radius: 4px;
+        }
+        .card::-webkit-scrollbar-thumb:hover {
+            background-color: --var(--scrollbarThumbHover);
+        }
+        
+
+        /* 代码块容器 */
+        .code-block-wrapper {
+            position: relative;
+            margin: 1em 0;
+            padding: 1em;
+            background: var(--codeBlockBg);
+            border-radius: 10px;
+            border: 1px solid var(--codeBorderColor);
+        }
+        
+        /* 代码块内容 */
+        .code-block-wrapper code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 1em;
+            line-height: 1.2;
+            display: block;
+            overflow-x: auto;
+        }
+         /* 行内代码的字体大小 */
+        code:not(.code-block-wrapper code) {
+            font-size: 1em;
+        }
+        /* 代码块的滚动条样式 */
+        pre code::-webkit-scrollbar,
+        .hljs::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        
+        pre code::-webkit-scrollbar-track,
+        .hljs::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        pre code::-webkit-scrollbar-thumb,
+        .hljs::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbarCodeThumb);
+            border-radius: 2px;
+        }
+        
+        pre code::-webkit-scrollbar-thumb:hover,
+        .hljs::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbarCodeThumbHover);
+        }
+
+
+        .code-block-wrapper code::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .code-block-wrapper code::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        
+        #themeToggle {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            padding: 12px;
+            background-color: var(--primaryButtonBg);
+            color: var(--primaryButtonFill);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        #themeToggle:hover {
+            background-color: var(--primaryButtonHoverBg);
+        }
+
+ 
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--resizeHandle);
+            right: -5px;
+            bottom: -5px;
+            cursor: se-resize;
+            border-radius: 40%;
+            transition: transform 0.3s;
+        }
+        .resize-handle:hover {
+            transform: scale(2.5);
+        }
+        .resize-handle.active {
+            transform: scale(2.5);
+            transition: none;
+        }
+
+
+        /* 图片 */
+        .card img {
+            max-width: 100%;
+            max-height: 100%;
+            /*height: auto;*/
+            display: block;
+            margin: 1em auto;
+            border-radius: 10px;
+            box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 表格 */
+        .card table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+            background-color: var(--tableBg);
+        }
+
+        .card th, 
+        .card td {
+            border: 1px solid var(--tableHeaderBg);
+            padding: 12px;
+            text-align: left;
+        }
+
+        .card th {
+            background-color: var(--tableHeaderBg);
+            font-weight: bold;
+        }
+
+        .card tr:nth-child(even) {
+            background-color: var(--tableStripedBg);
+        }
+
+
+
+        /* 标题 */
+        .card h1 {
+            font-size: 180%;
+            color: var(--titleColor);
+            margin-top: 0.1em;
+            margin-bottom: 0.3em;
+        }
+        .card h2 {
+            font-size: 150%;
+            color: var(--h2Color);
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .card h3 {
+            font-size: 130%;
+            color: var(--h3Color);
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .card h4 {
+            font-size: 120%;
+            color: var(--h4h5h6Color);
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+        .card h5 {
+            font-size: 110%;
+            color: var(--h4h5h6Color);
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+        .card h6 {
+            font-size: 100%;
+            color: var(--h4h5h6Color);
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+
+        /* 链接 */
+        .card a {
+            color: var(--linkColor);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .card a:hover {
+            color: var(--linkHoverColor);
+            text-decoration: underline;
+        }
+
+
+        /* 引用 */
+        .card blockquote {
+            padding: 1px 10px;
+            margin: 0.5em 0;  
+            background-color: var(--quoteBg);
+            border-left: 6px solid var(--quoteBorderColor1);
+            border-radius: 4px;
+        }
+
+        .card blockquote > blockquote {
+            margin: 0.3em 0; 
+            border-left-color: var(--quoteBorderColor2);
+        }
+
+        .card blockquote p {
+            margin: 0.5em 0; 
+        }
+
+         /* 列表样式 */
+        .card ul, .card ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+        .card ul {
+            list-style-type: disc;
+        }
+        .card ul ul {
+            list-style-type: circle;
+        }
+        .card ul ul ul {
+            list-style-type: square;
+        }
+        .card ol {
+            list-style-type: decimal;
+        }
+        .card li {
+            margin: 0.5em 0;
+            line-height: 1.6;
+        }
+        /* 列表 */
+        .card li::marker {
+            color: var(--listMarkerColor);
+        }
+        .card ol li::marker {
+            color: var(--listMarkerOrderedColor);
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card-container">
+            <div class="card" id="resizableCard">
+                <div id="content"></div>
+            </div>
+            <div class="resize-handle" id="resizeHandle"></div>
+        </div>
+    </div>
+    <button id="themeToggle"><i class="fas fa-moon"></i></button>
+    
+    <script>
+        // 默认内容，如果没有指定文件则显示
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 获取URL参数中的文件路径
+            const urlParams = new URLSearchParams(window.location.search);
+            const mdFile = urlParams.get('file');
+            
+            if (mdFile) {
+                // 根据 md 文件名动态加载对应的 js 文件
+                const scriptElement = document.createElement('script');
+                scriptElement.src = `md-contents/${mdFile.replace('.md', '-content.js')}`;
+                
+                // 添加脚本加载完成的事件处理
+                scriptElement.onload = function() {
+                    if (markdownFiles && markdownFiles[mdFile]) {
+                        markdownContent = markdownFiles[mdFile];
+                        document.title = getTitle(markdownContent) || mdFile;
+                        renderContent();
+                    } else {
+                        console.error('找不到Markdown内容:', mdFile);
+                        markdownContent = `# 错误\n找不到文件内容: ${mdFile}\n\n请确保文件存在并且已经运行了update-md.js脚本。`;
+                        renderContent();
+                    }
+                };
+                
+                scriptElement.onerror = function() {
+                    console.error('加载文件失败:', mdFile);
+                    markdownContent = `# 错误\n加载文件失败: ${mdFile}\n\n请确保文件存在并且已经运行了update-md.js脚本。`;
+                    renderContent();
+                };
+                
+                document.head.appendChild(scriptElement);
+            } else {
+                renderContent();
+            }
+            
+            function renderContent() {
+                const contentElement = document.getElementById('content');
+                contentElement.innerHTML = marked.parse(markdownContent);
+                // 配置 marked 选项
+                marked.use({
+                    renderer: {
+                        checkbox: function(checked) {
+                            return checked ? '✔️' : '❌';
+                        }
+                    }
+                });
+                contentElement.innerHTML = marked.parse(markdownContent);
+                
+
+                // 渲染数学公式
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ],
+                    throwOnError: false
+                });
+                
+                // 高亮代码块
+                hljs.highlightAll();
+
+                 
+            }
+            
+            // 从Markdown内容中提取标题
+            function getTitle(content) {
+                if (!content) return null;
+
+                const titleMatch = content.match(/^#\s+(.+)$/m);
+                if (titleMatch && titleMatch[1]) {
+                    return titleMatch[1].trim();
+                }
+                return null;
+            }
+            
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const codeTheme = document.getElementById('code-theme');
+            const card = document.getElementById('resizableCard');
+            const resizeHandle = document.getElementById('resizeHandle');
+
+            function setTheme(isDark) {
+                body.classList.toggle('dark-theme', isDark);
+                // 主题颜色
+                applyThemeColors(isDark);
+                
+                // 切换代码高亮主题
+                if (isDark) {
+                    codeTheme.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/stackoverflow-dark.css';
+                } else {
+                    codeTheme.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-light.css';
+                }
+                hljs.highlightAll();
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = !body.classList.contains('dark-theme');
+                setTheme(isDark);
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                // 更新图标
+                themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+
+            // 检查本地存储中的主题设置
+            const savedTheme = localStorage.getItem('theme') || 'dark'; // 设置默认值为 'dark'
+            setTheme(savedTheme === 'dark');
+            // 初始化图标
+            themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+
+            // 调整大小功能
+            let isResizing = false;
+            let startX, startY, startWidth, startHeight;
+
+            resizeHandle.addEventListener('mousedown', initResize, false);
+
+            function initResize(e) {
+                e.preventDefault(); // 防止默认行为
+                isResizing = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startWidth = parseInt(document.defaultView.getComputedStyle(card).width, 10);
+                startHeight = parseInt(document.defaultView.getComputedStyle(card).height, 10);
+                
+                // 事件监听器
+                document.addEventListener('mousemove', resize, { passive: false });
+                document.addEventListener('mouseup', stopResize, { passive: false });
+                
+                // 正在调整大时的状态类
+                card.classList.add('resizing');
+                resizeHandle.classList.add('active');
+            }
+
+            function resize(e) {
+                if (!isResizing) return;
+                
+                e.preventDefault();
+                
+                requestAnimationFrame(() => {
+                    const width = startWidth + (e.clientX - startX);
+                    const height = startHeight + (e.clientY - startY);
+
+                    const minWidth = Math.max(window.innerWidth * 0.3, 300);
+                    const maxWidth = window.innerWidth * 0.9;
+                    const minHeight = window.innerHeight * 0.4;
+                    const maxHeight = window.innerHeight * 0.94;
+                    
+                    const newWidth = Math.min(Math.max(width, minWidth), maxWidth);
+                    const newHeight = Math.min(Math.max(height, minHeight), maxHeight);
+                    
+                    card.style.width = `${newWidth}px`;
+                    card.style.height = `${newHeight}px`;
+
+                });
+            }
+
+            function stopResize() {
+                if (!isResizing) return;
+                
+                isResizing = false;
+                card.classList.remove('resizing');
+                // 移除活动状态类
+                resizeHandle.classList.remove('active');
+                
+                // 移除事件监听器
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            }
+        });
+    </script>
+</body>
+</html>

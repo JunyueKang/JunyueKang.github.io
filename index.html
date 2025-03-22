@@ -1,9 +1,267 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Live2D Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KKK's BLOG</title>
+    <!-- 生成的Markdown文件列表 -->
+    <script src="markdown-list.js"></script>
+    <!-- 类别数据 -->
+    <script src="categories.js"></script>
+    <!--  Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="themes.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: var(--background);
+            color: var(--textColor);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .category-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-right: 10px;
+            background-color: var(--categoryBg);
+            color: var(--categoryColor);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            box-sizing: border-box;
+            min-width: max-content; 
+            height: 32px;
+            line-height: 20px;
+            white-space: nowrap; 
+        }
+        .category-tag:hover {
+            background-color: var(--categoryActiveBg);
+            color: var(--categoryActiveColor);
+        }
+        
+        .category-tag.active {
+            background-color: var(--categoryActiveBg);
+            color: var(--categoryActiveColor);
+        }
+        
+        
+        /* 文章卡片 */
+        .article-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--borderColor);
+            border-radius: 5px;
+            background-color: var(--cardBackground);
+            box-shadow: 0 2px 4px var(--shadowColor);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+        }
+        
+        .article-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px var(--shadowHoverColor);
+        }
+        
+        /* 文章日期 */
+        .article-date {
+            font-size: 0.9em;
+            color: var(--textColorSecondary);
+            margin-top: 5px;
+        }
+        .article-title {
+            font-size: 1.2em;
+            color: var(--articleheader);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .article-title:hover {
+            color: var(--linkHoverColor);
+            text-decoration: underline;
+        }
+        .update-info {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--othertext);
+        }
+        .no-articles {
+            text-align: center;
+            color: var(--othertext);
+            font-style: italic;
+        }
+        /* 主题切换按钮 */
+        #themeToggle {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            padding: 12px;
+            background-color: var(--primaryButtonBg);
+            color: var(--primaryButtonFill);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        #themeToggle:hover {
+            background-color: var(--primaryButtonHoverBg);
+        }
+        .article-date {
+            font-size: 0.9em;
+            color: var(--articleDate);
+            margin-top: 5px;
+        }
+        /* 滚动条 - 纵向滚动条 */
+        body::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        body::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbarThumb);
+            border-radius: 4px;
+        }
+        
+        body::-webkit-scrollbar-thumb:hover {
+            background-color: var(--scrollbarThumbHover);
+        }
+
+        /* 标题动画 */
+        h1 {
+            color: var(--titleColor);
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        
+        /* 固定导航栏 */
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--background);
+            z-index: 1000;
+            padding: 10px 20px;
+            box-shadow: 0 2px 10px var(--shadowColor);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        
+        .sticky-header.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .sticky-header h1 {
+            margin: 0;
+            margin-right: 20px;
+            font-size: 1.5em;
+            text-align: left;
+            white-space: nowrap;
+        }
+        
+        /* 顶部内边距 */
+        .content-wrapper {
+            transition: padding-top 0.3s ease;
+        }
+        
+        .content-wrapper.adjusted {
+            padding-top: 60px;
+        }
+        
+        .categories-container-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            height: 32px; 
+            transition: all 0.3s ease;
+        }
+        
+        .search-container {
+            width: 30%;
+            display: flex;
+            align-items: center;
+            height: 32px; /* 与 category-tag 高度一致 */
+        }
+        
+        /* 搜索输入框 */
+        .search-input {
+            padding: 6px 12px;
+            border: 1px solid var(--searchInputBorder);
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            font-size: 14px;
+            min-width: 50px;
+            transition: border-color 0.3s;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: var(--searchInputBg);
+            color: var(--searchInputText);
+        }
+        /* 搜索按钮 */
+        .search-button {
+            padding: 6px 12px;
+            background-color: var(--searchButtonBg);
+            color: var(--searchButtonText);
+            border: none;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .search-button:hover {
+            background-color: var(--searchButtonHoverBg);
+        }
+        /* 类别横栏 */
+        .categories-container {
+            flex: 1;
+            overflow-x: hidden;
+            white-space: nowrap;
+            padding: 0;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: flex-start;
+            gap: 5px;
+            height: 32px;
+            align-items: center;
+        }
+        /* 模糊效果 */
+        .categories-container::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 50px;
+            background: linear-gradient(to right, var(--categoryBlurFrom), var(--categoryBlurTo));
+            pointer-events: none;
+        }
+        .article-list {
+            list-style: none;
+            padding: 0;
+        }
         #live2d-widget {
             position: fixed;
             right: 0;
@@ -12,9 +270,327 @@
             height: 500px;
             z-index: 1000;
         }
+
     </style>
 </head>
 <body>
+    <div class="sticky-header" id="stickyHeader">
+        <h1>KKK's BLOG</h1>
+        <div class="categories-container" id="stickyCategoriesContainer">
+            <span class="category-tag active" data-category="all">all</span>
+        </div>
+        <div class="search-container">
+            <input type="text" id="stickySearchInput" placeholder="搜索文章..." class="search-input">
+            <button id="stickySearchButton" class="search-button"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+    
+    <div class="content-wrapper" id="contentWrapper">
+        <h1>KKK's BLOG</h1>
+
+        <div class="categories-container-wrapper" id="categoriesWrapper">
+            <div class="categories-container" id="categoriesContainer">
+                <span class="category-tag active" data-category="all">all</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="搜索文章..." class="search-input">
+                <button id="searchButton" class="search-button"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+        
+        <ul class="article-list" id="articleList">
+        </ul>
+    </div>
+    
+    <!-- 主题切换按钮 -->
+    <button id="themeToggle"><i class="fas fa-moon"></i></button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const articleList = document.getElementById('articleList');
+            const categoriesContainer = document.getElementById('categoriesContainer');
+            const stickyCategoriesContainer = document.getElementById('stickyCategoriesContainer');
+            const stickyHeader = document.getElementById('stickyHeader');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const categoriesWrapper = document.getElementById('categoriesWrapper');
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const stickySearchInput = document.getElementById('stickySearchInput');
+            const stickySearchButton = document.getElementById('stickySearchButton');
+            let articles = [];
+            
+            // 添加滚动事件监听
+            window.addEventListener('scroll', function() {
+                const categoriesPosition = categoriesWrapper.getBoundingClientRect().top;
+                const categoriesHeight = categoriesWrapper.offsetHeight;
+                
+                // 当categories栏完全被挡住时，显示固定导航栏
+                if (categoriesPosition + categoriesHeight <= -10) {
+                    stickyHeader.classList.add('visible');
+                    contentWrapper.classList.add('adjusted');
+                } else {
+                    stickyHeader.classList.remove('visible');
+                    contentWrapper.classList.remove('adjusted');
+                }
+            });
+             // 为静态的"all"类别标签添加点击事件
+            document.querySelector('#categoriesContainer .category-tag[data-category="all"]').addEventListener('click', function() {
+                filterArticlesByCategory('all');
+            });
+            
+            document.querySelector('#stickyCategoriesContainer .category-tag[data-category="all"]').addEventListener('click', function() {
+                filterArticlesByCategory('all');
+            });
+            
+            // 同步搜索框内容
+            searchInput.addEventListener('input', function() {
+                stickySearchInput.value = this.value;
+            });
+            
+            stickySearchInput.addEventListener('input', function() {
+                searchInput.value = this.value;
+            });
+            
+            // 固定导航栏中的搜索按钮
+            stickySearchButton.addEventListener('click', performSearch);
+            stickySearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // 初始化类别标签
+            if (categoriesData && categoriesData.categories && categoriesData.categories.length > 0) {
+                categoriesData.categories.forEach(category => {
+                    // 主要类别容器 标签
+                    const categoryTag = document.createElement('span');
+                    categoryTag.className = 'category-tag';
+                    categoryTag.setAttribute('data-category', category);
+                    categoryTag.textContent = category;
+                    categoryTag.addEventListener('click', function() {
+                        filterArticlesByCategory(category);
+                    });
+                    categoriesContainer.appendChild(categoryTag);
+                    
+                    // 固定导航栏的类别容器 标签
+                    const stickyCategoryTag = document.createElement('span');
+                    stickyCategoryTag.className = 'category-tag';
+                    stickyCategoryTag.setAttribute('data-category', category);
+                    stickyCategoryTag.textContent = category;
+                    stickyCategoryTag.addEventListener('click', function() {
+                        filterArticlesByCategory(category);
+                    });
+                    stickyCategoriesContainer.appendChild(stickyCategoryTag);
+                });
+            }
+            
+            // 初始化文章列表
+            initializeArticles();
+            
+            function initializeArticles() {
+                // 检查是否有可用的Markdown文件列表
+                if (typeof markdownList !== 'undefined' && markdownList.length > 0) {
+                    articles = markdownList;
+                    renderArticles(articles);
+                } else {
+                    // 如果没有可用的Markdown文件
+                    const noArticles = document.createElement('p');
+                    noArticles.className = 'no-articles';
+                    noArticles.textContent = '没有找到Markdown文件。请在md文件夹中添加.md文件，然后运行update-md.js脚本。';
+                    articleList.appendChild(noArticles);
+                }
+            }
+            
+            function renderArticles(articlesToRender) {
+                // 清空文章列表
+                articleList.innerHTML = '';
+                
+                if (articlesToRender.length === 0) {
+                    const noArticles = document.createElement('p');
+                    noArticles.className = 'no-articles';
+                    noArticles.textContent = '没有找到符合条件的文章。';
+                    articleList.appendChild(noArticles);
+                    return;
+                }
+                
+                // 对文章按最后修改时间进行降序
+                const sortedArticles = [...articlesToRender].sort((a, b) => {
+                    const dateA = a.lastModified ? new Date(a.lastModified.replace(/\//g, '-')) : new Date(0);
+                    const dateB = b.lastModified ? new Date(b.lastModified.replace(/\//g, '-')) : new Date(0);
+                    return dateB - dateA;
+                });
+                
+                // 生成文章列表
+                sortedArticles.forEach(file => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'article-item';
+                    
+                    const link = document.createElement('a');
+                    link.className = 'article-title';
+                    link.href = `article.html?file=${file.filename}`;
+                    link.textContent = file.title || file.filename;
+                    
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'article-date';
+                    dateDiv.textContent = `最后修改：${file.lastModified || '未知时间'}`;
+                    
+                    listItem.appendChild(link);
+                    listItem.appendChild(dateDiv);
+                    articleList.appendChild(listItem);
+                });
+            }
+            
+            // 恢复之前选中的类别和滚动位置
+            const savedCategory = localStorage.getItem('selectedCategory') || 'all';
+            if (savedCategory !== 'all') {
+                filterArticlesByCategory(savedCategory);
+            }
+            
+            const savedScrollPosition = localStorage.getItem('scrollPosition');
+            if (savedScrollPosition) {
+                window.scrollTo(0, parseInt(savedScrollPosition));
+            }
+            
+            // 监听页面离开事件
+            window.addEventListener('beforeunload', function() {
+                localStorage.setItem('scrollPosition', window.scrollY.toString());
+            });
+            
+            function filterArticlesByCategory(category) {
+                // 更新类别标签的活跃状态
+                const categoryTags = document.querySelectorAll('.category-tag');
+                categoryTags.forEach(tag => {
+                    if (tag.getAttribute('data-category') === category) {
+                        tag.classList.add('active');
+                    } else {
+                        tag.classList.remove('active');
+                    }
+                });
+            
+                // 保存当前选中的类别
+                localStorage.setItem('selectedCategory', category);
+            
+                // 获取被点击的标签
+                const clickedTag = document.querySelector(`.category-tag[data-category="${category}"]`);
+                const container = document.getElementById('categoriesContainer');
+                const stickyContainer = document.getElementById('stickyCategoriesContainer');
+                
+                // 将被点击的标签移动到第一位
+                if (clickedTag) {
+                    // 主要类别容器
+                    const tags = Array.from(container.children);
+                    const clickedIndex = tags.findIndex(tag => tag.getAttribute('data-category') === category);
+                    
+                    if (clickedIndex !== -1) {
+                        const reorderedTags = [
+                            ...tags.slice(clickedIndex),
+                            ...tags.slice(0, clickedIndex)
+                        ];
+                        
+                        container.innerHTML = '';
+                        reorderedTags.forEach(tag => container.appendChild(tag));
+                    }
+                    
+                    // 固定导航栏的类别容器
+                    const stickyTags = Array.from(stickyContainer.children);
+                    const stickyClickedIndex = stickyTags.findIndex(tag => tag.getAttribute('data-category') === category);
+                    
+                    if (stickyClickedIndex !== -1) {
+                        const reorderedStickyTags = [
+                            ...stickyTags.slice(stickyClickedIndex),
+                            ...stickyTags.slice(0, stickyClickedIndex)
+                        ];
+                        
+                        stickyContainer.innerHTML = '';
+                        reorderedStickyTags.forEach(tag => stickyContainer.appendChild(tag));
+                    }
+                }
+                
+                // 文章筛选
+                if (category === 'all') {
+                    renderArticles(articles);
+                    return;
+                }
+                
+                const filteredArticles = articles.filter(article => {
+                    if (categoriesData.articles && categoriesData.articles[article.filename]) {
+                        return categoriesData.articles[article.filename].includes(category);
+                    }
+                    return false;
+                });
+                
+                renderArticles(filteredArticles);
+            }
+            
+
+            
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                if (!searchTerm) {
+                    // 如果搜索框为空，显示当前选中类别的文章
+                    const activeCategory = document.querySelector('.category-tag.active').getAttribute('data-category');
+                    filterArticlesByCategory(activeCategory);
+                    return;
+                }
+                
+                // 在当前选中类别中搜索
+                const activeCategory = document.querySelector('.category-tag.active').getAttribute('data-category');
+                let articlesToSearch = articles;
+                
+                if (activeCategory !== 'all') {
+                    articlesToSearch = articles.filter(article => {
+                        if (categoriesData.articles && categoriesData.articles[article.filename]) {
+                            return categoriesData.articles[article.filename].includes(activeCategory);
+                        }
+                        return false;
+                    });
+                }
+                
+                // 根据搜索词过滤文章
+                const searchResults = articlesToSearch.filter(article => {
+                    const title = (article.title || article.filename).toLowerCase();
+                    return title.includes(searchTerm);
+                });
+                
+                renderArticles(searchResults);
+            }
+            
+            searchButton.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+        });
+        
+        // 主题切换
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function setTheme(isDark) {
+            document.body.classList.toggle('dark-theme', isDark);
+            applyThemeColors(isDark);
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
+
+        // 初始化主题
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(savedTheme === 'dark');
+        });
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = !document.body.classList.contains('dark-theme');
+            setTheme(isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // 检查本地存储中的主题设置
+        const savedTheme = localStorage.getItem('theme') || 'dark'; // 设置默认值为 'dark'
+        setTheme(savedTheme === 'dark');
+    // L2Dwidget
+    </script>
     <div id="live2d-widget"></div>
 
     <!-- 添加核心依赖 -->
@@ -25,23 +601,24 @@
     <script>
         const config = {
             "model": {
-                //"jsonPath": "https://cdn.jsdelivr.net/npm/live2d-widget-model-hijiki@1.0.5/assets/hijiki.model.json",
+                "jsonPath": "https://cdn.jsdelivr.net/npm/live2d-widget-model-hijiki@1.0.5/assets/hijiki.model.json",
                 // 如果使用本地模型，改用下面的配置
-                "jsonPath": "./model.json" 
+                //"jsonPath": "./model.json" 
+                scale: 0.8
                 
             },
             "display": {
                 "position": "right",
                 "width": 300,
-                "height": 500
+                "height": 250,
+                "hOffset": -50, 
+                "vOffset": 0,    
             },
             "mobile": {
-                "show": true,
-                "scale": 0.5
+                "show": false, 
             },
-            "react": {
-                "opacity": 1.0
-            }
+            
+            "log": false,
         };
 
         window.onload = () => {
