@@ -1,6 +1,6 @@
 # 这是一篇测试
 
-欢迎使用Markdown卡片
+欢迎使用Markdown卡片，
 
 # 一级标题，欢迎使用Markdown卡片
 
@@ -10,7 +10,7 @@
 
 正文：
 
-简单来说，就是提供了 dsn ，username ，password ，query 四个参数，然后通过 PDO 连接数据库，执行查询，返回查询结果。细心的同学可以注意到 index.phps 文件最底下，还提示有“本机没有 mysql 数据库”的字样。说明这道题不应该往 mysql 方向想。如果有经验的可以想到 sqlite ，没有经验的，我这里是计划通过我给提示来指示的。
+简单来说，就是提供了 dsn ，username ，password ，query 四个参数，然后通过 PDO 连接数据库，执行查询，返回查询结果。
 
 ## 1.数学公式
 
@@ -32,7 +32,7 @@ def greet(name):
 print(greet("World"))
 ```
 ## 3.链接
-这是一个链接 [菜鸟教程](https://www.runoob.com)
+这是一个链接 [markdown教程](https://markdown.com.cn)
 
 这个链接用 1 作为网址变量 [Google][1]
 
