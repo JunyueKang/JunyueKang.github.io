@@ -20,7 +20,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/stackoverflow-dark.css" id="code-theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/stackoverflow-dark.css" id="dark-code-theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-light.css" id="light-code-theme" disabled>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
     <!-- 动态加载对应的 Markdown 内容文件 -->
     <script>
@@ -585,10 +586,15 @@
                 applyThemeColors(isDark);
                 
                 // 切换代码高亮主题
+                const darkTheme = document.getElementById('dark-code-theme');
+                const lightTheme = document.getElementById('light-code-theme');
+                
                 if (isDark) {
-                    codeTheme.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/stackoverflow-dark.css';
+                    darkTheme.removeAttribute('disabled');
+                    lightTheme.setAttribute('disabled', 'disabled');
                 } else {
-                    codeTheme.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-light.css';
+                    lightTheme.removeAttribute('disabled');
+                    darkTheme.setAttribute('disabled', 'disabled');
                 }
                 hljs.highlightAll();
             }
