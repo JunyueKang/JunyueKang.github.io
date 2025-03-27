@@ -603,7 +603,7 @@
             const currentTheme = localStorage.getItem('theme') || 'dark'; // 设置默认值为 'dark'
             setTheme(currentTheme === 'dark');
             // 初始化图标
-            currentTheme.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 
 
             
