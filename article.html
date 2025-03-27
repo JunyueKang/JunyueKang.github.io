@@ -80,10 +80,6 @@
             background-color: var(--scrollbarThumbHover);
         }
 
-        /* 代码块滚动条 */
-        .code-block-wrapper code::-webkit-scrollbar-thumb {
-            background-color: var(--scrollbarCodeThumb);
-        }
         
         
 
@@ -138,20 +134,45 @@
         .code-block-wrapper {
             position: relative;
             margin: 1em 0;
-            padding: 1em;
             background: var(--codeBlockBg);
             border-radius: 10px;
-            border: 1px solid var(--codeBorderColor);
+            border: 2px solid var(--codeBorderColor);
+            overflow: hidden;
         }
         
         /* 代码块内容 */
         .code-block-wrapper code {
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 1em;
+            font-size: 0.95em;
             line-height: 1.2;
             display: block;
             overflow-x: auto;
+            padding: 1em 1em 1em;  /* 增加内边距，顶部留出空间给复制按钮 */
+            white-space: pre;      
+            tab-size: 4;            
         }
+
+        /* 复制按钮样式 */
+        .copy-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            background: var(--codecopyButtonBg);
+            color: var(--codecopyButtonFill);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7em;
+            z-index: 2;
+            transition: background-color 0.3s;
+        }
+
+        .copy-button:hover {
+            background-color: var(--codecopyButtonHoverBg);
+        }
+        
+        
          /* 行内代码的字体大小 */
         code:not(.code-block-wrapper code) {
             font-size: 1em;
@@ -423,17 +444,48 @@
             
             function renderContent() {
                 const contentElement = document.getElementById('content');
-                contentElement.innerHTML = marked.parse(markdownContent);
+                
                 // 配置 marked 选项
                 marked.use({
                     renderer: {
-                        checkbox: function(checked) {
-                            return checked ? '✔️' : '❌';
+                        code(code, language) {
+                            const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+                            const highlightedCode = hljs.highlight(code, { language: validLanguage }).value;
+                            return `<div class="code-block-wrapper" data-language="${language || 'plaintext'}">
+                                    <button class="copy-button" title="复制代码">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <code class="hljs language-${validLanguage}">${highlightedCode}</code>
+                                   </div>`;
                         }
                     }
                 });
+
                 contentElement.innerHTML = marked.parse(markdownContent);
-                
+
+                // 添加复制功能
+                document.querySelectorAll('.copy-button').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const codeBlock = button.nextElementSibling;
+                        const code = codeBlock.textContent;
+                        
+                        try {
+                            await navigator.clipboard.writeText(code);
+                            // 临时改变图标显示复制成功
+                            const originalHTML = button.innerHTML;
+                            button.innerHTML = '<i class="fas fa-check"></i>';
+                            setTimeout(() => {
+                                button.innerHTML = originalHTML;
+                            }, 2000);
+                        } catch (err) {
+                            console.error('复制失败:', err);
+                            button.innerHTML = '<i class="fas fa-times"></i>';
+                            setTimeout(() => {
+                                button.innerHTML = '<i class="fas fa-copy"></i>';
+                            }, 2000);
+                        }
+                    });
+                });
 
                 // 渲染数学公式
                 renderMathInElement(document.body, {
@@ -446,8 +498,6 @@
                 
                 // 高亮代码块
                 hljs.highlightAll();
-
-                 
             }
             
             // 从Markdown内容中提取标题

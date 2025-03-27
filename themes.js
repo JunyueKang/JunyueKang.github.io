@@ -26,6 +26,11 @@ const themes = {
         primaryButtonBg: '#007BFF',
         primaryButtonHoverBg: '#0056b3',
 
+        // 代码复制按钮颜色
+        codecopyButtonFill: '#444',
+        codecopyButtonBg: '#ddd',
+        codecopyButtonHoverBg: '#999',
+
         // 代码块
         codeBlockBg: '#d5dfe8',
         codeBorderColor: '#e9ecef',
@@ -107,6 +112,11 @@ const themes = {
         primaryButtonFill: '#fff',
         primaryButtonBg: '#555',
         primaryButtonHoverBg: '#666',
+
+        // 代码复制按钮颜色
+        codecopyButtonFill: '#fff',
+        codecopyButtonBg: '#666',
+        codecopyButtonHoverBg: '#777',
 
         // 代码块
         codeBlockBg: '#222',
