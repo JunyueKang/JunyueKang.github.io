@@ -12,6 +12,8 @@
         if (typeof applyThemeColors === 'function') {
             applyThemeColors(savedTheme === 'dark');
         }
+        // 更新图标
+        themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     </script>
     <!-- CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -65,7 +67,7 @@
             min-width: 300px;
             height: 90vh;
             overflow: auto;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0s, color 0s;
             color: var(--textColor);
         }
 
@@ -226,13 +228,35 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s;
+            transition: background-color 0s;
         }
 
         #themeToggle:hover {
             background-color: var(--primaryButtonHoverBg);
         }
 
+        /* 重置按钮样式 */
+        #resetButton {
+            position: fixed;
+            top: 130px;
+            right: 20px;
+            padding: 12px;
+            background-color: var(--primaryButtonBg);
+            color: var(--primaryButtonFill);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        #resetButton:hover {
+            background-color: var(--primaryButtonHoverBg);
+        }
  
         .resize-handle {
             position: absolute;
@@ -404,7 +428,8 @@
         </div>
     </div>
     <button id="themeToggle"><i class="fas fa-moon"></i></button>
-    
+    <button id="resetButton"><i class="fas fa-undo"></i></button>
+
     <script>
         // 默认内容，如果没有指定文件则显示
         document.addEventListener('DOMContentLoaded', function() {
@@ -511,12 +536,51 @@
                 return null;
             }
             
+            const card = document.getElementById('resizableCard');
+            const resetButton = document.getElementById('resetButton');
             const themeToggle = document.getElementById('themeToggle');
             const body = document.body;
             const codeTheme = document.getElementById('code-theme');
-            const card = document.getElementById('resizableCard');
             const resizeHandle = document.getElementById('resizeHandle');
+            
+            // 保存卡片位置和大小的函数
+            function saveCardState() {
+                const state = {
+                    width: card.style.width,
+                    height: card.style.height,
+                    scrollTop: card.scrollTop
+                };
+                localStorage.setItem('cardState', JSON.stringify(state));
+            }
 
+            // 恢复卡片状态
+            function loadCardState() {
+                const savedState = localStorage.getItem('cardState');
+                if (savedState) {
+                    const state = JSON.parse(savedState);
+                    card.style.width = state.width || '52vw';
+                    card.style.height = state.height || '90vh';
+                    card.scrollTop = state.scrollTop || 0;
+                }
+            }
+
+            // 重置卡片状态
+            function resetCardState() {
+                card.style.width = '52vw';
+                card.style.height = '90vh';
+                card.scrollTop = 0;
+                localStorage.removeItem('cardState');
+            }
+
+            // 监听卡片滚动
+            card.addEventListener('scroll', () => {
+                saveCardState();
+            });
+
+            // 重置按钮点击事件
+            resetButton.addEventListener('click', resetCardState);
+
+            // 切换主题
             function setTheme(isDark) {
                 body.classList.toggle('dark-theme', isDark);
                 // 主题颜色
@@ -530,7 +594,6 @@
                 }
                 hljs.highlightAll();
             }
-
             themeToggle.addEventListener('click', () => {
                 const isDark = !body.classList.contains('dark-theme');
                 setTheme(isDark);
@@ -538,13 +601,13 @@
                 // 更新图标
                 themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             });
+            
+            // 初始化主题图标
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 
-            // 检查本地存储中的主题设置
-            const savedTheme = localStorage.getItem('theme') || 'dark'; // 设置默认值为 'dark'
-            setTheme(savedTheme === 'dark');
-            // 初始化图标
-            themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
+            
+            
             renderMathInElement(document.body, {
                 delimiters: [
                     {left: "$$", right: "$$", display: true},
@@ -610,7 +673,11 @@
                 // 移除事件监听器
                 document.removeEventListener('mousemove', resize);
                 document.removeEventListener('mouseup', stopResize);
+                // 保存调整后的状态
+                saveCardState();
             }
+            // 页面加载时恢复状态
+            loadCardState();
         });
     </script>
 </body>
