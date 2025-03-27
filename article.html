@@ -12,8 +12,6 @@
         if (typeof applyThemeColors === 'function') {
             applyThemeColors(savedTheme === 'dark');
         }
-        // 更新图标
-        themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     </script>
     <!-- CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -601,10 +599,12 @@
                 // 更新图标
                 themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
             });
-            
-            // 初始化主题图标
-            const currentTheme = localStorage.getItem('theme') || 'dark';
-            themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            // 检查本地存储中的主题设置
+            const currentTheme = localStorage.getItem('theme') || 'dark'; // 设置默认值为 'dark'
+            setTheme(currentTheme === 'dark');
+            // 初始化图标
+            currentTheme.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
 
             
             

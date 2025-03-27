@@ -594,6 +594,7 @@
         });
         // 初始化主题图标
         const currentTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(currentTheme === 'dark');
         themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     // L2Dwidget
     </script>
