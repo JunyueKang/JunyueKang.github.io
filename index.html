@@ -76,6 +76,7 @@
             font-size: 0.9em;
             color: var(--textColorSecondary);
             margin-top: 5px;
+            line-height: 1.4;
         }
         .article-title {
             font-size: 1.2em;
@@ -420,10 +421,11 @@
                     return;
                 }
                 
-                // 对文章按最后修改时间进行降序
+   
+                // 对文章按创建时间进行降序
                 const sortedArticles = [...articlesToRender].sort((a, b) => {
-                    const dateA = a.lastModified ? new Date(a.lastModified.replace(/\//g, '-')) : new Date(0);
-                    const dateB = b.lastModified ? new Date(b.lastModified.replace(/\//g, '-')) : new Date(0);
+                    const dateA = a.createdTime ? new Date(a.createdTime.replace(/\//g, '-')) : new Date(0);
+                    const dateB = b.createdTime ? new Date(b.createdTime.replace(/\//g, '-')) : new Date(0);
                     return dateB - dateA;
                 });
                 
@@ -439,7 +441,12 @@
                     
                     const dateDiv = document.createElement('div');
                     dateDiv.className = 'article-date';
-                    dateDiv.textContent = `最后修改：${file.lastModified || '未知时间'}`;
+                    
+                    // 添加创建时间和最后修改时间（放在同一行）
+                    const createdTimeText = file.createdTime ? `Created at ${file.createdTime}` : '';
+                    const lastModifiedText = file.lastModified ? `Last modified at ${file.lastModified}` : '';
+                    
+                    dateDiv.innerHTML = createdTimeText ? `${createdTimeText} & ${lastModifiedText}` : lastModifiedText;
                     
                     listItem.appendChild(link);
                     listItem.appendChild(dateDiv);

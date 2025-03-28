@@ -35,7 +35,6 @@ function processMarkdown(mdContent, basePath) {
         }
     });
 }
-
 // 遍历目录并处理markdown文件
 function updateMarkdownFiles() {
     const mdDir = path.join(__dirname, 'md');
@@ -46,15 +45,25 @@ function updateMarkdownFiles() {
             const filePath = path.join(mdDir, file);
             let content = fs.readFileSync(filePath, 'utf8');
             
-            // 获取文件的最后修改时间
+            // 获取文件的创建时间和最后修改时间
             const stats = fs.statSync(filePath);
+            
+            // 获取创建时间
+            const createdTime = stats.birthtime.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).replace(/\//g, '/');
+            
+            // 获取最后修改时间
             const lastModified = stats.mtime.toLocaleString('zh-CN', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+                minute: '2-digit'
             }).replace(/\//g, '/');
             
             const title = content.split('\n')[0].replace(/^#\s*/, '') || file;
@@ -63,6 +72,7 @@ function updateMarkdownFiles() {
                 filename: file,
                 title: title,
                 path: `md/${file}`,
+                createdTime: createdTime,
                 lastModified: lastModified
             });
 
