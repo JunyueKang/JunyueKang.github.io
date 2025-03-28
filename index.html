@@ -27,7 +27,7 @@
             line-height: 1.6;
             background-color: var(--background);
             color: var(--textColor);
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.2s, color 0.2s;
         }
         .category-tag {
             display: inline-block;
@@ -37,7 +37,7 @@
             color: var(--categoryColor);
             border-radius: 20px;
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.2s, color 0.2s;
             box-sizing: border-box;
             min-width: max-content; 
             height: 32px;
@@ -122,6 +122,38 @@
         #themeToggle:hover {
             background-color: var(--primaryButtonHoverBg);
         }
+
+        #themeToggle i {
+            font-size: 18px;
+        }
+
+        /* GitHub按钮样式 */
+        #githubButton {
+            position: fixed;
+            top: 130px;
+            right: 20px;
+            padding: 12px;
+            background-color: var(--primaryButtonBg);
+            color: var(--primaryButtonFill);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        #githubButton:hover {
+            background-color: var(--primaryButtonHoverBg);
+        }
+
+        #githubButton i {
+            font-size: 22px; 
+        }
+
         .article-date {
             font-size: 0.9em;
             color: var(--articleDate);
@@ -189,6 +221,8 @@
         /* 顶部内边距 */
         .content-wrapper {
             transition: padding-top 0.3s ease;
+            max-width: calc(100% - 100px); /* 添加最大宽度限制，留出右侧按钮的空间 */
+            margin: 0 auto; /* 居中显示 */
         }
         
         .content-wrapper.adjusted {
@@ -270,15 +304,47 @@
             list-style: none;
             padding: 0;
         }
-        #live2d-widget {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            width: 300px;
-            height: 500px;
-            z-index: 1000;
+        
+        /* 响应式调整 */
+        @media (max-width: 868px) {
+            .content-wrapper {
+                max-width: calc(100% - 70px); /* 在较窄屏幕上减少右侧空间 */
+            }
+            
+            #themeToggle, #githubButton {
+                width: 40px;
+                height: 40px;
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 720px) {
+            .content-wrapper {
+                max-width: calc(100% - 60px); /* 在更窄屏幕上进一步减少右侧空间 */
+            }
+            
+            #themeToggle, #githubButton {
+                width: 35px;
+                height: 35px;
+                right: 5px;
+            }
+            #live2d-widget {
+                display: none;
+            }
         }
 
+        @media (max-width: 400px) {
+            .content-wrapper {
+                max-width: calc(100% - 50px); /* 在更窄屏幕上进一步减少右侧空间 */
+            }
+            
+            #themeToggle, #githubButton {
+                display: none;
+            }
+            #live2d-widget {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -312,7 +378,8 @@
     
     <!-- 主题切换按钮 -->
     <button id="themeToggle"><i class="fas fa-moon"></i></button>
-
+    <!-- GitHub主页按钮 -->
+    <button id="githubButton"><i class="fab fa-github"></i></button>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const articleList = document.getElementById('articleList');
@@ -577,6 +644,11 @@
             });
             
         });
+
+        // GitHub按钮点击事件
+        document.getElementById('githubButton').addEventListener('click', function() {
+            window.open('https://github.com/JunyueKang', '_blank');
+        });
         
         // 主题切换
         const themeToggle = document.getElementById('themeToggle');
@@ -603,6 +675,8 @@
         const currentTheme = localStorage.getItem('theme') || 'dark';
         setTheme(currentTheme === 'dark');
         themeToggle.innerHTML = currentTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+
     // L2Dwidget
     </script>
     <div id="live2d-widget"></div>
@@ -629,11 +703,12 @@
                 "vOffset": 0,    
             },
             "mobile": {
-                "show": false, 
+                "show": true, 
             },
             
             "log": false,
         };
+        
 
         window.onload = () => {
             L2Dwidget.init(config);

@@ -12,6 +12,7 @@
         if (typeof applyThemeColors === 'function') {
             applyThemeColors(savedTheme === 'dark');
         }
+        
     </script>
     <!-- CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -174,6 +175,7 @@
         }
         
         
+        
          /* 行内代码的字体大小 */
         code:not(.code-block-wrapper code) {
             font-size: 1em;
@@ -210,7 +212,31 @@
         .code-block-wrapper code::-webkit-scrollbar-track {
             background: transparent;
         }
-        
+
+        #homeButton {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            padding: 12px;
+            background-color: var(--primaryButtonBg);
+            color: var(--primaryButtonFill);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        #homeButton:hover {
+            background-color: var(--primaryButtonHoverBg);
+        }
+        #homeButton i {
+            font-size: 16px; /* 增加图标大小 */
+        }
         
         #themeToggle {
             position: fixed;
@@ -233,8 +259,10 @@
         #themeToggle:hover {
             background-color: var(--primaryButtonHoverBg);
         }
+        #themeToggle i {
+            font-size: 18px; /* 增加图标大小 */
+        }
 
-        /* 重置按钮样式 */
         #resetButton {
             position: fixed;
             top: 130px;
@@ -255,6 +283,10 @@
 
         #resetButton:hover {
             background-color: var(--primaryButtonHoverBg);
+        }
+
+        #resetButton i {
+            font-size: 16px; /* 增加图标大小 */
         }
  
         .resize-handle {
@@ -414,6 +446,42 @@
         .card ol li::marker {
             color: var(--listMarkerOrderedColor);
         }
+
+
+        /* 响应式调整 */
+        @media (max-width: 868px) {
+            .content-wrapper {
+                max-width: calc(100% - 70px); /* 在较窄屏幕上减少右侧空间 */
+            }
+            
+            #homeButton, #themeToggle, #resetButton {
+                width: 40px;
+                height: 40px;
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 720px) {
+            .content-wrapper {
+                max-width: calc(100% - 60px); /* 在更窄屏幕上进一步减少右侧空间 */
+            }
+            
+            #homeButton, #themeToggle, #resetButton {
+                width: 35px;
+                height: 35px;
+                right: 5px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .content-wrapper {
+                max-width: calc(100% - 50px); /* 在更窄屏幕上进一步减少右侧空间 */
+            }
+            
+            #homeButton, #themeToggle, #resetButton {
+                display: none;
+            }
+        }
         
     </style>
 </head>
@@ -426,6 +494,7 @@
             <div class="resize-handle" id="resizeHandle"></div>
         </div>
     </div>
+    <button id="homeButton"><i class="fas fa-home"></i></button>
     <button id="themeToggle"><i class="fas fa-moon"></i></button>
     <button id="resetButton"><i class="fas fa-undo"></i></button>
 
@@ -562,6 +631,8 @@
                     card.scrollTop = state.scrollTop || 0;
                 }
             }
+            // 页面加载时恢复状态
+            loadCardState();
 
             // 重置卡片状态
             function resetCardState() {
@@ -575,7 +646,11 @@
             card.addEventListener('scroll', () => {
                 saveCardState();
             });
-
+            // 首页按钮点击事件
+            const homeButton = document.getElementById('homeButton');
+            homeButton.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
             // 重置按钮点击事件
             resetButton.addEventListener('click', resetCardState);
 
@@ -682,8 +757,7 @@
                 // 保存调整后的状态
                 saveCardState();
             }
-            // 页面加载时恢复状态
-            loadCardState();
+            
         });
     </script>
 </body>
