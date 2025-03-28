@@ -21,7 +21,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
@@ -308,7 +308,9 @@
         /* 响应式调整 */
         @media (max-width: 868px) {
             .content-wrapper {
-                max-width: calc(100% - 70px); /* 在较窄屏幕上减少右侧空间 */
+                max-width: calc(100% - 50px); /* 在较窄屏幕上减少右侧空间 */
+                margin: 0;
+                margin-right: auto;
             }
             
             #themeToggle, #githubButton {
@@ -316,17 +318,25 @@
                 height: 40px;
                 right: 10px;
             }
+            body {
+                padding: 20px;
+            }
         }
         
         @media (max-width: 720px) {
             .content-wrapper {
-                max-width: calc(100% - 60px); /* 在更窄屏幕上进一步减少右侧空间 */
+                max-width: calc(100% - 30px); /* 在更窄屏幕上进一步减少右侧空间 */
+                margin: 0;
+                margin-right: auto;
             }
             
             #themeToggle, #githubButton {
                 width: 35px;
                 height: 35px;
                 right: 5px;
+            }
+            body {
+                padding: 20px;
             }
             #live2d-widget {
                 display: none;
@@ -335,11 +345,15 @@
 
         @media (max-width: 400px) {
             .content-wrapper {
-                max-width: calc(100% - 50px); /* 在更窄屏幕上进一步减少右侧空间 */
+                max-width: calc(100% - 20px); /* 在更窄屏幕上进一步减少右侧空间 */
+                margin: 0 auto;
             }
             
             #themeToggle, #githubButton {
                 display: none;
+            }
+            body {
+                padding: 10px;
             }
             #live2d-widget {
                 display: none;
