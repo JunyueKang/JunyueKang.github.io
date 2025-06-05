@@ -702,20 +702,25 @@
             let startX, startY, startWidth, startHeight;
 
             resizeHandle.addEventListener('mousedown', initResize, false);
+            resizeHandle.addEventListener('touchstart', initResize, false);  // 添加触摸事件支持
 
             function initResize(e) {
-                e.preventDefault(); // 防止默认行为
+                e.preventDefault();
                 isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
+                // 获取触摸或鼠标事件的坐标
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                startX = clientX;
+                startY = clientY;
                 startWidth = parseInt(document.defaultView.getComputedStyle(card).width, 10);
                 startHeight = parseInt(document.defaultView.getComputedStyle(card).height, 10);
                 
                 // 事件监听器
                 document.addEventListener('mousemove', resize, { passive: false });
+                document.addEventListener('touchmove', resize, { passive: false });  // 添加触摸移动事件
                 document.addEventListener('mouseup', stopResize, { passive: false });
+                document.addEventListener('touchend', stopResize, { passive: false });  // 添加触摸结束事件
                 
-                // 正在调整大时的状态类
                 card.classList.add('resizing');
                 resizeHandle.classList.add('active');
             }
