@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KKK's BLOG</title>
+    <title>KJY's BLOG</title>
     <!-- 生成的Markdown文件列表 -->
     <script src="markdown-list.js"></script>
     <!-- 类别数据 -->
@@ -359,6 +359,10 @@
                 display: none;
             }
         }
+
+        .typing-text {
+        letter-spacing: -4px;  /* 减小字符间距 */
+        }
     </style>
 </head>
 <body>
@@ -374,8 +378,32 @@
     </div>
     
     <div class="content-wrapper" id="contentWrapper">
-        <h1>KKK's BLOG</h1>
-
+        <div class="content-wrapper" id="contentWrapper">
+            <h1 class="typing-text">
+                <span class="char" style="opacity: 0">K</span>
+                <span class="char" style="opacity: 0">J</span>
+                <span class="char" style="opacity: 0">Y</span>
+                <span class="char" style="opacity: 0">'</span>
+                <span class="char" style="opacity: 0">s</span>
+                <span class="char" style="opacity: 0">&nbsp;</span>
+                <span class="char" style="opacity: 0">B</span>
+                <span class="char" style="opacity: 0">L</span>
+                <span class="char" style="opacity: 0">O</span>
+                <span class="char" style="opacity: 0">G</span>
+            </h1>
+            <script>
+                const chars = document.querySelectorAll('.char');
+                let i = 0;
+                function showChar() {
+                    if (i < chars.length) {
+                        chars[i].style.opacity = 1;
+                        i++;
+                        setTimeout(showChar, 240);
+                    }
+                }
+                showChar();
+            </script>
+        </div>
         <div class="categories-container-wrapper" id="categoriesWrapper">
             <div class="categories-container" id="categoriesContainer">
                 <span class="category-tag active" data-category="all">all</span>
