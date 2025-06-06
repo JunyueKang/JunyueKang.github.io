@@ -707,19 +707,20 @@
             function initResize(e) {
                 e.preventDefault();
                 isResizing = true;
-                // 获取触摸或鼠标事件的坐标
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                startX = clientX;
-                startY = clientY;
+                
+                // 获取坐标（兼容触摸和鼠标事件）
+                const touch = e.touches ? e.touches[0] : e;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                
                 startWidth = parseInt(document.defaultView.getComputedStyle(card).width, 10);
                 startHeight = parseInt(document.defaultView.getComputedStyle(card).height, 10);
                 
-                // 事件监听器
+                // 添加事件监听
                 document.addEventListener('mousemove', resize, { passive: false });
-                document.addEventListener('touchmove', resize, { passive: false });  // 添加触摸移动事件
+                document.addEventListener('touchmove', resize, { passive: false, capture: true });
                 document.addEventListener('mouseup', stopResize, { passive: false });
-                document.addEventListener('touchend', stopResize, { passive: false });  // 添加触摸结束事件
+                document.addEventListener('touchend', stopResize, { passive: false, capture: true });
                 
                 card.classList.add('resizing');
                 resizeHandle.classList.add('active');
@@ -727,16 +728,12 @@
 
             function resize(e) {
                 if (!isResizing) return;
-                
                 e.preventDefault();
                 
                 requestAnimationFrame(() => {
-                    // 兼容触摸事件
-                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-                    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-                    
-                    const width = startWidth + (clientX - startX);
-                    const height = startHeight + (clientY - startY);
+                    const touch = e.touches ? e.touches[0] : e;
+                    const width = startWidth + (touch.clientX - startX);
+                    const height = startHeight + (touch.clientY - startY);
 
                     const minWidth = Math.max(window.innerWidth * 0.3, 300);
                     const maxWidth = window.innerWidth * 0.9;
@@ -753,13 +750,12 @@
                 
                 isResizing = false;
                 
-                // 移除事件监听器
+                // 移除所有事件监听
                 document.removeEventListener('mousemove', resize);
-                document.removeEventListener('touchmove', resize);
+                document.removeEventListener('touchmove', resize, { capture: true });
                 document.removeEventListener('mouseup', stopResize);
-                document.removeEventListener('touchend', stopResize);
+                document.removeEventListener('touchend', stopResize, { capture: true });
                 
-                // 移除状态类
                 card.classList.remove('resizing');
                 resizeHandle.classList.remove('active');
             }
