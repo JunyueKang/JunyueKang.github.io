@@ -558,27 +558,56 @@
 
                 // 添加复制功能
                 document.querySelectorAll('.copy-button').forEach(button => {
-                    button.addEventListener('click', async () => {
-                        const codeBlock = button.nextElementSibling;
-                        const code = codeBlock.textContent;
+                // 添加触摸事件支持
+                button.addEventListener('click', handleCopy);
+                button.addEventListener('touchend', handleCopy);
+
+                async function handleCopy(e) {
+                    e.preventDefault(); // 防止移动端默认行为
+                    const codeBlock = button.nextElementSibling;
+                    const code = codeBlock.textContent;
+                    
+                    try {
+                        // 检查剪贴板API权限
+                        if (navigator.permissions) {
+                            const {state} = await navigator.permissions.query({name: 'clipboard-write'});
+                            if (state !== 'granted') {
+                                throw new Error('Clipboard permission not granted');
+                            }
+                        }
                         
+                        await navigator.clipboard.writeText(code);
+                        // 临时改变图标显示复制成功
+                        const originalHTML = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            button.innerHTML = originalHTML;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('复制失败:', err);
+                        // 回退方案：使用document.execCommand
                         try {
-                            await navigator.clipboard.writeText(code);
-                            // 临时改变图标显示复制成功
-                            const originalHTML = button.innerHTML;
+                            const textarea = document.createElement('textarea');
+                            textarea.value = code;
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textarea);
+                            
                             button.innerHTML = '<i class="fas fa-check"></i>';
                             setTimeout(() => {
-                                button.innerHTML = originalHTML;
+                                button.innerHTML = '<i class="fas fa-copy"></i>';
                             }, 2000);
-                        } catch (err) {
-                            console.error('复制失败:', err);
+                        } catch (fallbackErr) {
+                            console.error('回退复制方案失败:', fallbackErr);
                             button.innerHTML = '<i class="fas fa-times"></i>';
                             setTimeout(() => {
                                 button.innerHTML = '<i class="fas fa-copy"></i>';
                             }, 2000);
                         }
-                    });
-                });
+                    }
+                }
+            });
 
                 // 渲染数学公式
                 renderMathInElement(document.body, {
