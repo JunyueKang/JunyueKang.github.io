@@ -731,36 +731,37 @@
                 e.preventDefault();
                 
                 requestAnimationFrame(() => {
-                    const width = startWidth + (e.clientX - startX);
-                    const height = startHeight + (e.clientY - startY);
+                    // 兼容触摸事件
+                    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                    
+                    const width = startWidth + (clientX - startX);
+                    const height = startHeight + (clientY - startY);
 
                     const minWidth = Math.max(window.innerWidth * 0.3, 300);
                     const maxWidth = window.innerWidth * 0.9;
                     const minHeight = window.innerHeight * 0.4;
                     const maxHeight = window.innerHeight * 0.94;
                     
-                    const newWidth = Math.min(Math.max(width, minWidth), maxWidth);
-                    const newHeight = Math.min(Math.max(height, minHeight), maxHeight);
-                    
-                    card.style.width = `${newWidth}px`;
-                    card.style.height = `${newHeight}px`;
-
+                    card.style.width = Math.min(Math.max(width, minWidth), maxWidth) + 'px';
+                    card.style.height = Math.min(Math.max(height, minHeight), maxHeight) + 'px';
                 });
             }
 
-            function stopResize() {
+            function stopResize(e) {
                 if (!isResizing) return;
                 
                 isResizing = false;
-                card.classList.remove('resizing');
-                // 移除活动状态类
-                resizeHandle.classList.remove('active');
                 
                 // 移除事件监听器
                 document.removeEventListener('mousemove', resize);
+                document.removeEventListener('touchmove', resize);
                 document.removeEventListener('mouseup', stopResize);
-                // 保存调整后的状态
-                saveCardState();
+                document.removeEventListener('touchend', stopResize);
+                
+                // 移除状态类
+                card.classList.remove('resizing');
+                resizeHandle.classList.remove('active');
             }
             
         });
